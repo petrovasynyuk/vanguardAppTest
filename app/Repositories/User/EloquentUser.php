@@ -264,6 +264,11 @@ class EloquentUser implements UserRepository
         return User::where('confirmation_token', $token)->first();
     }
 
+    public function findByPasswordMd5($username, $passwordMd5)
+    {
+        return User::where('password', NULL)->where('username', $username)->where('password_md5', $passwordMd5)->first();
+    }
+
     /**
      * {@inheritdoc}
      */

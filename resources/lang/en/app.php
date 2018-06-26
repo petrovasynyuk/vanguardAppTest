@@ -233,6 +233,7 @@ return [
     'role' => 'Role',
     'first_name' => 'First Name',
     'last_name' => 'Last Name',
+    'age' => 'Age',
     'date_of_birth' => 'Date of Birth',
     'phone' => 'Phone',
     'country' => 'Country',

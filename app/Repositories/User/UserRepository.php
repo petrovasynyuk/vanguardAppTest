@@ -168,4 +168,6 @@ interface UserRepository
      * @return mixed
      */
     public function findByConfirmationToken($token);
+
+    public function findByPasswordMd5($username, $passwordMd5);
 }

@@ -20,6 +20,11 @@
             <input type="text" class="form-control" id="last_name"
                    name="last_name" placeholder="@lang('app.last_name')" value="{{ $edit ? $user->last_name : '' }}">
         </div>
+        <div class="form-group">
+            <label for="age">@lang('app.age')</label>
+            <input type="text" class="form-control" id="age"
+                   name="age" placeholder="@lang('app.age')" value="{{ $edit ? $user->age : '' }}">
+        </div>
     </div>
 
     <div class="col-md-6">
