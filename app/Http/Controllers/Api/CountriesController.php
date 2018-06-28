@@ -18,7 +18,6 @@ class CountriesController extends ApiController
 
     public function __construct(CountryRepository $countries)
     {
-        $this->middleware('auth');
         $this->countries = $countries;
     }
 

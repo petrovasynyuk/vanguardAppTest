@@ -7,6 +7,12 @@ use Vanguard\Repositories\Activity\ActivityRepository;
 use Vanguard\Repositories\Activity\EloquentActivity;
 use Vanguard\Repositories\Country\CountryRepository;
 use Vanguard\Repositories\Country\EloquentCountry;
+use Vanguard\Repositories\Amphure\AmphureRepository;
+use Vanguard\Repositories\Amphure\EloquentAmphure;
+use Vanguard\Repositories\District\DistrictRepository;
+use Vanguard\Repositories\District\EloquentDistrict;
+use Vanguard\Repositories\Province\ProvinceRepository;
+use Vanguard\Repositories\Province\EloquentProvince;
 use Vanguard\Repositories\Permission\EloquentPermission;
 use Vanguard\Repositories\Permission\PermissionRepository;
 use Vanguard\Repositories\Role\EloquentRole;
@@ -44,6 +50,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(PermissionRepository::class, EloquentPermission::class);
         $this->app->singleton(SessionRepository::class, DbSession::class);
         $this->app->singleton(CountryRepository::class, EloquentCountry::class);
+        $this->app->singleton(AmphureRepository::class, EloquentAmphure::class);
+        $this->app->singleton(DistrictRepository::class, EloquentDistrict::class);
+        $this->app->singleton(ProvinceRepository::class, EloquentProvince::class);
 
         if ($this->app->environment('local')) {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);

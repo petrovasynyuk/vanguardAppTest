@@ -63,3 +63,9 @@ Route::resource('permissions', 'Authorization\PermissionsController', [
 Route::get('/settings', 'SettingsController@index');
 
 Route::get('/countries', 'CountriesController@index');
+
+Route::get('/provinces/{countryId}', 'ProvincesController@listByCountryId');
+
+Route::get('/districts/{amphureId}', 'DistrictController@listByAmphureId');
+
+Route::get('/amphures/{provinceId}', 'AmphureController@listByProvinceId');

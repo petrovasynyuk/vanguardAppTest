@@ -3,6 +3,7 @@
 namespace Vanguard\Http\Middleware;
 
 use Closure;
+use Config;
 use Illuminate\Contracts\Auth\Guard;
 
 class Authenticate
@@ -13,6 +14,7 @@ class Authenticate
      * @var Guard
      */
     protected $auth;
+    protected $appInformation;
 
     /**
      * Create a new filter instance.
@@ -23,6 +25,7 @@ class Authenticate
     public function __construct(Guard $auth)
     {
         $this->auth = $auth;
+        $this->appInformation = Config::get('appInformation');
     }
 
     /**
@@ -40,6 +43,14 @@ class Authenticate
             } else {
                 return redirect()->guest('login');
             }
+        }
+
+        $data = $request->except('_token');
+
+        $appSecret = $this->appInformation[$data['appId']]['secret'];
+
+        if (md5($data['appId'].$appSecret) != $data['appToken']) {
+            return response('Unauthorized.', 401);
         }
 
         return $next($request);

@@ -11,6 +11,9 @@ use Vanguard\Http\Requests\User\EnableTwoFactorRequest;
 use Vanguard\Http\Requests\User\UpdateProfileDetailsRequest;
 use Vanguard\Http\Requests\User\UpdateProfileLoginDetailsRequest;
 use Vanguard\Repositories\Activity\ActivityRepository;
+use Vanguard\Repositories\Amphure\AmphureRepository;
+use Vanguard\Repositories\District\DistrictRepository;
+use Vanguard\Repositories\Province\ProvinceRepository;
 use Vanguard\Repositories\Country\CountryRepository;
 use Vanguard\Repositories\Role\RoleRepository;
 use Vanguard\Repositories\Session\SessionRepository;
@@ -61,18 +64,24 @@ class ProfileController extends Controller
      * @param CountryRepository $countryRepository
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(RoleRepository $rolesRepo, CountryRepository $countryRepository)
+    public function index(RoleRepository $rolesRepo, CountryRepository $countryRepository, AmphureRepository $amphureRepository, DistrictRepository $districtRepository, ProvinceRepository $provinceRepository)
     {
+        return $token = $this->validateToken('aaa', 1);
+
         $user = $this->theUser;
         $edit = true;
         $roles = $rolesRepo->lists();
+        $gender = ['m'=>'Male', 'f'=>'Female'];
+        $amphures = ($user->province_id != null) ? [0 => 'Select a Amphure'] + $amphureRepository->listByProvinceId($user->province_id)->toArray(): null;
+        $districts = ($user->amphure_id != null) ? [0 => 'Select a District'] + $districtRepository->listByAmphureId($user->amphure_id)->toArray(): null;
+        $provinces = ($user->country_id == 764) ? [0 => 'Select a Province'] + $provinceRepository->lists()->toArray() : null;
         $countries = [0 => 'Select a Country'] + $countryRepository->lists()->toArray();
         $socialLogins = $this->users->getUserSocialLogins($this->theUser->id);
         $statuses = UserStatus::lists();
 
         return view(
             'user/profile',
-            compact('user', 'edit', 'roles', 'countries', 'socialLogins', 'statuses')
+            compact('user', 'edit', 'roles', 'gender', 'amphures', 'districts', 'provinces', 'countries', 'socialLogins', 'statuses')
         );
     }
 
@@ -84,7 +93,17 @@ class ProfileController extends Controller
      */
     public function updateDetails(UpdateProfileDetailsRequest $request)
     {
-        $this->users->update($this->theUser->id, $request->except('role_id', 'status'));
+        $data = $request->except('role_id', 'status');
+
+        if ($data['country_id'] == 764 && (!isset($data['amphure_id']) || !isset($data['district_id']) || !isset($data['province_id']))) {
+            return redirect()->back()->withErrors(trans('app.profile_updated_error'));
+        } else if ($data['country_id'] != 764) {
+            $data['amphure_id'] = null;
+            $data['district_id'] = null;
+            $data['province_id'] = null;
+        }
+
+        $this->users->update($this->theUser->id, $data);
 
         event(new UpdatedProfileDetails);
 
